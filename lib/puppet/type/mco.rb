@@ -41,6 +41,13 @@ Puppet::Type.newtype(:mco) do
     desc 'The name of the job'
   end
 
+  newparam(:wait) do
+    desc "the agent we want to call"
+
+    newvalues(:true, :false)
+    defaultto :false
+  end
+
   newparam(:agent) do
     desc "the agent we want to call"
   end
@@ -57,6 +64,10 @@ Puppet::Type.newtype(:mco) do
         raise ArgumentError, "Filter allowable hash keys are 'identity', 'class', 'iwonderifthiswillwork'" unless ourkeys.member?(k)
       end
     end
+    defaultto []
+  end
+
+  newparam(:parameters, :array_matching => :all) do
   end
 
   newparam(:optionhash, :array_matching => :all) do

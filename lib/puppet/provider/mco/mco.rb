@@ -11,6 +11,7 @@ Puppet::Type.type(:mco).provide(:mco) do
     options[:disctimeout] = 2
     options[:timeout] = 2
     options[:collective] = 'mcollective'
+    options[:force] = 'true'
 
     if @resource[:optionhash]
       @resource[:optionhash].each do |thing,value|
@@ -30,7 +31,31 @@ Puppet::Type.type(:mco).provide(:mco) do
       svcs.identity_filter @resource[:filter]['identity']
       svcs.class_filter @resource[:filter]['class']
     end
-    svcs.send(@resource[:action].to_sym, :force=> true, :process_results => false)
+    extra_params = options_to_sym(@resource[:parameters])
+    Puppet.debug(extra_params.inspect)
+    if extra_params
+      svcs.send @resource[:action].to_sym, extra_params
+    else
+      svcs.send @resource[:action].to_sym
+    end
   end
 
+  def options_to_sym(param)
+    options = {} 
+    if param
+      param.each do |thing,value|
+        options[thing.to_sym] = value
+      end
+    end
+    if @resource[:wait] == 'true' or !!@resource[:wait] == @resource[:wait]
+      Puppet.debug "This was true: #{@resource[:wait]}"
+      options[:force] = false
+      options[:process_results] = true
+    else
+      Puppet.debug @resource[:wait]
+      options[:force] = true
+      options[:process_results] = false
+    end
+    options
+  end
 end
