@@ -5,12 +5,12 @@ Consider the following resource chain:
     exec { '/bin/true': }
       ~>
     mco { 'the thing':
-      agent => 'puppet',
-      action => 'runonce',
-      filter => { 
-                   'identity' => ['node1','node2','/somenodeswithacommonname/'],
-                   'class' => ['aclass::withasubclass'],
-                }          
+      agent      => 'puppet',
+      action     => 'runonce',
+      filter     => { 
+                       'identity' => ['node1','node2','/somenodeswithacommonname/'],
+                       'class' => ['aclass::withasubclass'],
+                    }          
       configfile => '/var/lib/peadmin/.mcollective',
      }
 
