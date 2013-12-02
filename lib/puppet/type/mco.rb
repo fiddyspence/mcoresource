@@ -54,8 +54,8 @@ Puppet::Type.newtype(:mco) do
   end
 
   newparam(:optionhash, :array_matching => :all) do
-
   end
+
   newparam(:configfile) do
     desc 'What filtering to apply'
     defaultto '/etc/puppetlabs/puppet/client/cfg'
