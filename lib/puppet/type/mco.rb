@@ -49,13 +49,22 @@ Puppet::Type.newtype(:mco) do
     desc 'The action on the agent'
   end
 
-  newparam(:filter) do
+  newparam(:filter, :array_matching => :all) do
     desc 'What filtering to apply'
+    ourkeys = ['identity','class','iwonderifthiswillwork']
+    validate do |whatdidwegetgiven|
+      whatdidwegetgiven.each do |k,v|
+        raise ArgumentError, "#{config} is not an absolute path" unless k in ourkeys
+      end
+  
+    end
+
+
   end
 
   newparam(:optionhash, :array_matching => :all) do
-  end
 
+  end
   newparam(:configfile) do
     desc 'What filtering to apply'
     defaultto '/etc/puppetlabs/puppet/client/cfg'

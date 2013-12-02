@@ -24,8 +24,12 @@ Puppet::Type.type(:mco).provide(:mco) do
     config = options
     Puppet.debug("#{config.inspect}")
     identityfilter,factfilter = []
-    svcs = MCollective::RPC::Client.new("puppet", :options => config)
+    svcs = MCollective::RPC::Client.new(@resource[:agent], :options => config)
+
     svcs.send(@resource[:action].to_sym, :force=> true, :process_results => false)
+  end
+  def filterhandle
+    	
 
 
   end
