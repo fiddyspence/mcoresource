@@ -7,13 +7,16 @@ Consider the following resource chain:
     mco { 'the thing':
       agent => 'puppet',
       action => 'runonce',
-      filter => [],
+      filter => { 
+                   'identity' => ['node1','node2','/somenodeswithacommonname/'],
+                   'class' => ['aclass::withasubclass'],
+                }          
       configfile => '/var/lib/peadmin/.mcollective',
      }
 
 The mco resource is set to `refreshonly => true` by default, so unless it's triggered by a refresh event from another resource nothing will happen.
 
-If triggered, the mcollective RPC agent puppet, with the action runonce will be triggered (filtering is untested right now - watch for version 0.0.2) using the configuration file at `configfile`
+If triggered, the mcollective RPC agent puppet, with the action runonce will be triggered (filtering works for classes and identity - watch for magic later - maybe version 0.0.2) using the configuration file at `configfile`
 
 License
 -------
