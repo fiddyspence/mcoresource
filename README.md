@@ -22,9 +22,9 @@ If triggered, the mcollective RPC agent puppet, with the action runonce will be 
 
 Other parameters:
 
-  wait: whether to hold for RPC responses
-  parameters: other options to send the mcollective agent (e.g. the status action on the package agent requires package=foo)
-  optionhash: other mcollective client options - will override any defaults (e.g. optionshash => { 'theoption' => 'thevalue' })
+    wait: whether to hold for RPC responses
+    parameters: other options to send the mcollective agent (e.g. the status action on the package agent requires package=foo)
+    optionhash: other mcollective client options - will override any defaults (e.g. optionshash => { 'theoption' => 'thevalue' })
 
 
 License
