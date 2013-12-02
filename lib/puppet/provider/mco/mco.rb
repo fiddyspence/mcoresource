@@ -25,13 +25,12 @@ Puppet::Type.type(:mco).provide(:mco) do
     Puppet.debug("#{config.inspect}")
     identityfilter,factfilter = []
     svcs = MCollective::RPC::Client.new(@resource[:agent], :options => config)
-
+    Puppet.debug("We received the filter: #{@resource[:filter].inspect}")
+    unless @resource[:filter].empty?
+      svcs.identity_filter @resource[:filter]['identity']
+      svcs.class_filter @resource[:filter]['class']
+    end
     svcs.send(@resource[:action].to_sym, :force=> true, :process_results => false)
-  end
-  def filterhandle
-    	
-
-
   end
 
 end

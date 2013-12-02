@@ -54,12 +54,9 @@ Puppet::Type.newtype(:mco) do
     ourkeys = ['identity','class','iwonderifthiswillwork']
     validate do |whatdidwegetgiven|
       whatdidwegetgiven.each do |k,v|
-        raise ArgumentError, "#{config} is not an absolute path" unless k in ourkeys
+        raise ArgumentError, "Filter allowable hash keys are 'identity', 'class', 'iwonderifthiswillwork'" unless ourkeys.member?(k)
       end
-  
     end
-
-
   end
 
   newparam(:optionhash, :array_matching => :all) do
