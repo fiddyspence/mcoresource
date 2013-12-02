@@ -9,7 +9,7 @@ Consider the following resource chain:
       action     => 'runonce',
       filter     => { 
                        'identity' => ['node1','node2','/somenodeswithacommonname/'],
-                       'class' => ['aclass::withasubclass'],
+                       'class'    => ['aclass::withasubclass'],
                     }          
       configfile => '/var/lib/peadmin/.mcollective',
      }
