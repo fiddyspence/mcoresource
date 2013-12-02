@@ -89,6 +89,10 @@ Puppet::Type.newtype(:mco) do
     self.property(:returns).sync
   end
 
+  autorequire(:file) do
+    self[:configfile] if self[:configfile]
+  end
+
   def check_all_attributes(refreshing = false)
     self.class.checks.each { |check|
       next if refreshing and check == :refreshonly
