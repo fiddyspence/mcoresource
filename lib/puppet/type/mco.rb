@@ -17,6 +17,7 @@ Puppet::Type.newtype(:mco) do
   end
 
   newproperty(:returns) do
+    desc "What we got back from the mcollective run - probably some kind of object, but as yet this isn't properly parsed" 
     defaultto "0"
 
     munge do | value|
@@ -38,18 +39,18 @@ Puppet::Type.newtype(:mco) do
   end
 
   newparam(:name, :namevar => true) do
-    desc 'The name of the job'
+    desc 'The name of the job for the catalog'
   end
 
   newparam(:wait) do
-    desc "the agent we want to call"
+    desc "whether to block on the mcollective run, or just abandon the responses to the RPC call"
 
     newvalues(:true, :false)
     defaultto :false
   end
 
   newparam(:agent) do
-    desc "the agent we want to call"
+    desc "The mcollective agent we want to call"
   end
 
   newparam(:action) do
@@ -57,7 +58,7 @@ Puppet::Type.newtype(:mco) do
   end
 
   newparam(:filter, :array_matching => :all) do
-    desc 'What filtering to apply'
+    desc 'What filtering to apply - either identity => [] class => [], or later discovery filtering on other things'
     ourkeys = ['identity','class','iwonderifthiswillwork']
     validate do |whatdidwegetgiven|
       whatdidwegetgiven.each do |k,v|
@@ -68,13 +69,14 @@ Puppet::Type.newtype(:mco) do
   end
 
   newparam(:parameters, :array_matching => :all) do
+    desc 'Other parameters to pass to the agent (e.g. package => openssl to the status action on the package agent'
   end
 
   newparam(:optionhash, :array_matching => :all) do
-
+    desc 'Other mcollective options to override defaults'
   end
   newparam(:configfile) do
-    desc 'What filtering to apply'
+    desc 'File on disk to load as the client configuration'
     defaultto '/etc/puppetlabs/puppet/client/cfg'
 
     validate do |config|
@@ -83,7 +85,7 @@ Puppet::Type.newtype(:mco) do
   end
 
   newcheck(:refreshonly) do
-
+    desc 'Trigger every time or not (false means yes, true means no) - works the same as refreshonly on an exec {}'
     newvalues(:true, :false)
     defaultto :true
     def check(value)

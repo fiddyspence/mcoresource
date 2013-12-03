@@ -1,5 +1,5 @@
 name    'fiddyspence/mcoresource'
-version '0.2.0'
+version '0.2.2'
 source 'https://github.com/fiddyspence/mcoresource.git'
 author 'fiddyspence'
 license 'Apache License, Version 2.0'
