@@ -16,12 +16,13 @@ Puppet::Type.newtype(:mco) do
     @checks.keys
   end
 
-  newproperty(:returns) do
-    desc "What we got back from the mcollective run - probably some kind of object, but as yet this isn't properly parsed" 
-    defaultto "0"
+  newproperty(:returns, :array_matching => :all) do
+    defaultto 0
 
-    munge do | value|
-      value.to_s
+    validate do |value|
+      unless value.is_a?(Array)
+
+      end
     end
 
     def retrieve
@@ -34,23 +35,35 @@ Puppet::Type.newtype(:mco) do
 
     def sync
       @status = provider.mcollective(self.resource[:agent],self.resource[:action],self.resource[:filter])
-      self.send(@resource[:loglevel],@status)
+
+      if self.should[0].to_i == self.should[0]
+        if @status.size != @resource[:returns][0].to_i
+          self.fail("We choked on size: #{@status} - expected #{self.should}")
+        end
+      else
+        @resource[:returns].each do |node|
+          Puppet.debug node
+          self.fail("We choked: #{@status}") unless @status.include?(node) 
+        end
+      end
+      self.send(:notice, self.should)
     end
+
   end
 
   newparam(:name, :namevar => true) do
-    desc 'The name of the job for the catalog'
+    desc 'The name of the job'
   end
 
   newparam(:wait) do
-    desc "whether to block on the mcollective run, or just abandon the responses to the RPC call"
+    desc "the agent we want to call"
 
     newvalues(:true, :false)
     defaultto :false
   end
 
   newparam(:agent) do
-    desc "The mcollective agent we want to call"
+    desc "the agent we want to call"
   end
 
   newparam(:action) do
@@ -58,25 +71,24 @@ Puppet::Type.newtype(:mco) do
   end
 
   newparam(:filter, :array_matching => :all) do
-    desc 'What filtering to apply - either identity => [] class => [], or later discovery filtering on other things'
-    ourkeys = ['identity','class','iwonderifthiswillwork']
+    desc 'What filtering to apply'
+    ourkeys = ['identity','class','compound']
     validate do |whatdidwegetgiven|
       whatdidwegetgiven.each do |k,v|
-        raise ArgumentError, "Filter allowable hash keys are 'identity', 'class', 'iwonderifthiswillwork'" unless ourkeys.member?(k)
+        raise ArgumentError, "Filter allowable hash keys are 'identity', 'class', 'compound'" unless ourkeys.member?(k)
       end
     end
     defaultto []
   end
 
   newparam(:parameters, :array_matching => :all) do
-    desc 'Other parameters to pass to the agent (e.g. package => openssl to the status action on the package agent'
   end
 
   newparam(:optionhash, :array_matching => :all) do
-    desc 'Other mcollective options to override defaults'
+
   end
   newparam(:configfile) do
-    desc 'File on disk to load as the client configuration'
+    desc 'What filtering to apply'
     defaultto '/etc/puppetlabs/puppet/client/cfg'
 
     validate do |config|
@@ -85,7 +97,7 @@ Puppet::Type.newtype(:mco) do
   end
 
   newcheck(:refreshonly) do
-    desc 'Trigger every time or not (false means yes, true means no) - works the same as refreshonly on an exec {}'
+
     newvalues(:true, :false)
     defaultto :true
     def check(value)

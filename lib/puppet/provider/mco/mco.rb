@@ -6,12 +6,10 @@ Puppet::Type.type(:mco).provide(:mco) do
     options[:agent] = @resource[:agent]
     options[:config] = @resource[:configfile]
     options[:verbose] = false
-    options[:process_results] = false
     options[:mcollective_limit_targets] = false
     options[:disctimeout] = 2
     options[:timeout] = 2
     options[:collective] = 'mcollective'
-    options[:force] = 'true'
 
     if @resource[:optionhash]
       @resource[:optionhash].each do |thing,value|
@@ -19,43 +17,52 @@ Puppet::Type.type(:mco).provide(:mco) do
       end
     end
     options
+
   end
 
   def mcollective(agent,action,filter)
     config = options
     Puppet.debug("#{config.inspect}")
     identityfilter,factfilter = []
+
     svcs = MCollective::RPC::Client.new(@resource[:agent], :options => config)
-    Puppet.debug("We received the filter: #{@resource[:filter].inspect}")
+
     unless @resource[:filter].empty?
       svcs.identity_filter @resource[:filter]['identity']
       svcs.class_filter @resource[:filter]['class']
+      svcs.compound_filter @resource[:filter]['compound']
     end
+    
     extra_params = options_to_sym(@resource[:parameters])
-    Puppet.debug(extra_params.inspect)
-    if extra_params
-      svcs.send @resource[:action].to_sym, extra_params
+
+    action_result = svcs.send @resource[:action].to_sym, extra_params
+    if action_result.is_a?(String)
+      0
     else
-      svcs.send @resource[:action].to_sym
+#      action_result.results
+      return_data = []
+      action_result.each do |result|
+        return_data << result[:sender]
+      end
+      Puppet.debug "return_data: #{return_data.inspect}"
+      return_data
     end
   end
 
   def options_to_sym(param)
-    options = {} 
+    local_options = {} 
     if param
       param.each do |thing,value|
-        options[thing.to_sym] = value
+        local_options[thing.to_sym] = value
       end
     end
-    if @resource[:wait] == 'true' or !!@resource[:wait] == @resource[:wait]
-      Puppet.debug "This was true: #{@resource[:wait]}"
-      options[:force] = false
-      options[:process_results] = true
+    if @resource[:wait] == 'true' or !!@resource[:wait] == true
+      local_options[:process_results] = true
     else
-      Puppet.debug @resource[:wait]
-      options[:force] = true
-      options[:process_results] = false
+      local_options[:process_results] = false
     end
-    options
+    Puppet.debug("#{local_options.inspect}")
+    local_options
+
   end
 end

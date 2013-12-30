@@ -9,6 +9,7 @@ Consider the following resource chain:
       action     => 'upgrade',
       filter     => { 
                        'identity' => ['node1','node2','/somenodeswithacommonname/'],
+                       'compound' => 'sysctl("vm.swappiness").value=50',
                        'class'    => ['aclass::withasubclass'],
                     }          
       configfile => '/var/lib/peadmin/.mcollective',
