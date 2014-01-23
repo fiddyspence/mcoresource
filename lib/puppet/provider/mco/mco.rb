@@ -56,7 +56,7 @@ Puppet::Type.type(:mco).provide(:mco) do
         local_options[thing.to_sym] = value
       end
     end
-    if @resource[:wait] == 'true' or !!@resource[:wait] == true
+    if @resource[:wait] == :true
       local_options[:process_results] = true
     else
       local_options[:process_results] = false

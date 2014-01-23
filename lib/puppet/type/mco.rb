@@ -35,15 +35,18 @@ Puppet::Type.newtype(:mco) do
 
     def sync
       @status = provider.mcollective(self.resource[:agent],self.resource[:action],self.resource[:filter])
-
-      if self.should[0].to_i == self.should[0]
-        if @status.size != @resource[:returns][0].to_i
-          self.fail("We choked on size: #{@status} - expected #{self.should}")
-        end
-      else
-        @resource[:returns].each do |node|
-          Puppet.debug node
-          self.fail("We choked: #{@status}") unless @status.include?(node) 
+      if @resource[:wait] == :true
+        if self.should.size == 1 and self.should[0] =~ /^[0-9]+$/
+          Puppet.debug 'we decided number'
+          if @status.size != @resource[:returns][0].to_i
+            self.fail("We choked on size: #{@status} - expected #{self.should}")
+          end
+        else
+          Puppet.debug 'we decided array'
+          @resource[:returns].each do |node|
+            Puppet.debug "here: #{node}"
+            self.fail("We choked: #{@status}") unless @status.include?(node) 
+          end
         end
       end
       self.send(:notice, self.should)
