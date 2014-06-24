@@ -34,4 +34,4 @@ Apache 2.0
 
 Contact
 -------
-chris.spence@puppetlabs.com
+github@spence.org.uk
